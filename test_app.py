@@ -24,3 +24,12 @@ def test_signup_duplicate_is_rejected():
     response = client.post("/activities/Chess%20Club/signup?email=michael@mergington.edu")
     assert response.status_code == 400
     assert response.json()["detail"] == "Student is already signed up for this activity"
+
+
+def test_unregister_participant_removes_them_from_activity():
+    response = client.delete("/activities/Chess%20Club/unregister?email=daniel@mergington.edu")
+    assert response.status_code == 200
+    assert response.json()["message"] == "Unregistered daniel@mergington.edu from Chess Club"
+
+    updated = client.get("/activities")
+    assert "daniel@mergington.edu" not in updated.json()["Chess Club"]["participants"]
